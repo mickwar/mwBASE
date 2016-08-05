@@ -27,6 +27,6 @@ col_mult("dodgerblue", "gray50")
 # returns #0F487F, i.e. a darkened version of dodgerblue
 }
 \seealso{
-col_dens, col_gray
+col_dens, col_gray, col_fade
 }
 

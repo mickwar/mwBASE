@@ -17,6 +17,7 @@ col_dens(dens, xlim, fill = "black", border = NULL)
 }
 \description{
 Original by Arthur Lui, adapted by Mickey.
+
 Colors a specified area under a density within an interval by making
 a call to the polygon function
 }
@@ -27,6 +28,6 @@ plot(dens)
 col_dens(dens, c(0, 1), fill = "blue", border = NA)
 }
 \seealso{
-col_mult, col_gray
+col_mult, col_gray, col_fade
 }
 

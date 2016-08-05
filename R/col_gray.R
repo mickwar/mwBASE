@@ -4,7 +4,7 @@
 #'
 #' @param rgb       numeric vector in [0, 1]^3
 #' @param method    either "yprime", "average", or "lightness". "yprime" attempts to approximate human vision, "average" simply takes the average of rgb and assigns this to all RGB values, "lightness" takes the average of the range of rgb.
-#' @seealso col_dens, col_mult
+#' @seealso col_dens, col_mult, col_fade
 #' @export
 #' @examples
 #' col_gray(c(0.8, 0.1, 0.8), "yprime")
