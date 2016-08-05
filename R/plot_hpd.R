@@ -49,7 +49,7 @@ plot_hpd = function(dens, hpd, col1, col2 = "gray50",
 
     # Draw each group
     for (i in 1:(length(new.hpd)/2+1))
-        col_dens(dens, mid[2*i-1], mid[2*i], col1, NA)
+        col_dens(dens, mid[(2*i-1):(2*i)], col1, NA)
     for (i in 1:(length(new.hpd)/2))
-        col_dens(dens, new.hpd[2*i-1], new.hpd[2*i], col2, NA)
+        col_dens(dens, new.hpd[(2*i-1):(2*i)], col2, NA)
     }
