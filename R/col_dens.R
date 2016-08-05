@@ -1,6 +1,7 @@
-#' col.dens
+#' col_dens
 #'
 #' Original by Arthur Lui, adapted by Mickey
+#'
 #' Colors a specified area under a density within an interval by making
 #' a call to the polygon function
 #'
@@ -13,9 +14,9 @@
 #' x = rnorm(100)
 #' dens = density(x)
 #' plot(dens)
-#' col.dens(dens, c(0, 1), fill = "blue", border = NA)
+#' col_dens(dens, c(0, 1), fill = "blue", border = NA)
 
-col.dens = function(dens, xlim, fill = "black", border = NULL){
+col_dens = function(dens, xlim, fill = "black", border = NULL){
     if (is.null(border))
         border = fill
     index = which(dens$x >= xlim[1] & dens$x <= xlim[2])
