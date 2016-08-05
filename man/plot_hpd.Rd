@@ -29,7 +29,7 @@ transparent) to 1 (opaque), defaults to 1}
 \item{...}{extra arguments to pass to plot()}
 }
 \description{
-plot a univariate density with its hpd shaded
+Plot a univariate density with its hpd shaded
 }
 \examples{
 x = rnorm(100)

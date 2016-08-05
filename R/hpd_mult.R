@@ -2,14 +2,27 @@
 #'
 #' @description
 #' Compute the highest density posterior region from a (possibly multi-modal)
-#' sample of points. If the distribution of the points is known to be unimodal,
-#' then hpd_uni() should be used instead as it will be faster and more accurate
+#' sample of points.
 #'
 #' @param x         vector of samples from some distribution
 #' @param dens      a density object based on x, defaults to density(x)
 #' @param prob      numeric in (0, 1) the probability that the interval should be
-#' @param klength   numeric, determines how accurate the resulting hpd should be,
-#'      larger is more precise
+#' @param tol       numeric, smaller means longer compute time, but more accurate
+#'                  results
+#' @param interactive logical, defaults to FALSE. If TRUE, a fun plot is shown
+#'                  and the function's process of choosing the region is displayed.
+#'                  The user hits enter to proceed through.
+#'
+#' @details
+#' Since hpd_mult relies on a density object, it is possible to be returned a
+#' result that is outside the bounds of the data (i.e., an hpd for a beta random
+#' variable that has a left end point below 0).
+#'
+#' A random horizontal line is repeatedly generated and the points along the line
+#' that cross dens$y are calculated. These points make up a proposed hpd region
+#' whose area is computed. Given this area, a new horizontal line is generated
+#' until the area is close to prob (within tol).
+#'
 #' @seealso hpd_uni
 #' @export
 #' @examples
@@ -17,16 +30,20 @@
 #' x = c(rnorm(100), rnorm(100, 5)
 #' hpd = hpd_mult(x)
 
-hpd_mult = function(x, dens, prob = 0.95, klength = 5000){
+hpd_mult = function(x, dens, prob = 0.95, tol, interactive = FALSE){
     if (missing(dens))
         dens = density(x)
-    c.prob = 1
-    temp.prob = 0
-    k = seq(min(dens$y), max(dens$y), length=klength)
-    # i = 2 to prevent certain problems, test.x4 had an issue
-    # with the probability 0 region in the middle, (doesn't always
-    # occur) perhaps fix by doing f(x) > k, instead of f(x) >= k?
-    i = 2
+    max.k = max(dens$y)
+    min.k = min(dens$y)
+#   k = (max.k - min.k)/2
+    k = runif(1, min.k, max.k)
+    if (missing(tol))
+        tol = max.k / 10000
+    count = 0
+    if (interactive){
+        plot(dens)
+        polygon(dens$x, dens$y, col='gray80')
+        }
     zeros = function(y, k, return.max.min = FALSE){
         # y is expected to be density(x)$y
         out = NULL
@@ -65,29 +82,36 @@ hpd_mult = function(x, dens, prob = 0.95, klength = 5000){
             return (out)
         return (out[as.logical(int)])
         }
-    # repeat until area under curve is <= specified prob
-    # (note 14 jun: perhaps do some kind of iterative
-    # convergence to reduce the number of iterations;
-    # start in the middle i = floor(klength/2), and if
-    # temp.prob is too low, set i=floor((i + 0)/2), else
-    # set i = floor((i + klength)/2), repeat until value
-    # is sufficiently close to prob. need to keep track of
-    # previous "lower" and "upper" bounds
-    while (c.prob > prob){
-        temp.prob = 0
-        int = zeros(dens$y, k[i])
-        if (!is.null(int)){
-            if (length(int) > 0){
-                # sum the area in the intervals
-                for (j in 1:(length(int)/2))
-                    temp.prob = temp.prob + mean(x >= dens$x[
-                         int[2*j-1]] & x <= dens$x[int[2*j]])
-                # update (i think this always occurs)
-                if (c.prob > temp.prob)
-                    c.prob = temp.prob
-                }
+    while (max.k - min.k > tol){
+        count = count + 1
+        c.prob = 0
+        int = zeros(dens$y, k)
+        if (is.null(int)){
+            int = c(1, length(dens$x))
             }
-        i = i + 1
+        # sum the area in the intervals
+        for (j in 1:(length(int)/2))
+            c.prob = c.prob + mean(x >= dens$x[
+                 int[2*j-1]] & x <= dens$x[int[2*j]])
+        if (interactive){
+            abline(h=k)
+            abline(h=c(max.k, min.k), col='blue')
+            cat("Probability:",c.prob)
+            readline()
+            }
+        # not a large enough region, lower k
+        if (c.prob < prob)
+            max.k = k
+        # too much region, raise k
+        if (c.prob > prob)
+            min.k = k
+        # right-e-o!
+        if (c.prob == prob)
+            max.k = min.k
+        # pick new height to test at
+        k = runif(1, min.k, max.k)
         }
+    if (interactive)
+        cat("Iterations:",count,"\n")
     return (dens$x[int])
     }

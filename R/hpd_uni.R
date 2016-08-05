@@ -1,7 +1,10 @@
 #' hpd_uni
 #'
 #' @description
-#' Compute the highest density posterior interval from a (unimodal) sample of points
+#' Compute the highest density posterior interval from a (unimodal) sample of points.
+#' Unless (slightly) more accurate results for unimodal distributions are deired,
+#' the hpd_mult function should be used instead as it runs faster and can handle
+#' multiple modes.
 #'
 #' @param x         vector of samples from some distribution
 #' @param prob      numeric in (0, 1) the probability that the interval should be

@@ -1,7 +1,7 @@
 #' plot_hpd
 #'
 #' @description
-#' plot a univariate density with its hpd shaded
+#' Plot a univariate density with its hpd shaded
 #'
 #' @param dens     density object to be plotted
 #' @param hpd      vector containing end points of the hpd region, must have

@@ -16,7 +16,7 @@ col_dens(dens, xlim, fill = "black", border = NULL)
 \item{border}{color, the outline of the area receives this color, defaults to fill}
 }
 \description{
-Original by Arthur Lui, adapted by Mickey.
+Adapted from Arthur Lui
 
 Colors a specified area under a density within an interval by making
 a call to the polygon function

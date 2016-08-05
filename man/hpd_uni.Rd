@@ -15,7 +15,10 @@ hpd_uni(x, prob = 0.95, precision = 1000)
 larger is more precise}
 }
 \description{
-Compute the highest density posterior interval from a (unimodal) sample of points
+Compute the highest density posterior interval from a (unimodal) sample of points.
+Unless (slightly) more accurate results for unimodal distributions are deired,
+the hpd_mult function should be used instead as it runs faster and can handle
+multiple modes.
 }
 \examples{
 x = rnorm(100)
