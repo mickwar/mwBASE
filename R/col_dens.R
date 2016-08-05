@@ -1,7 +1,6 @@
 #' col_dens
 #'
-#' Original by Arthur Lui, adapted by Mickey
-#'
+#' Original by Arthur Lui, adapted by Mickey.
 #' Colors a specified area under a density within an interval by making
 #' a call to the polygon function
 #'
