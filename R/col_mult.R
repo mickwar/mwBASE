@@ -6,6 +6,7 @@
 #'
 #' @param col1 a color, either in name or integer/hexidecimal
 #' @param col2 a color, either in name or integer/hexidecimal
+#' @seealso col_dens, col_gray
 #' @export
 #' @examples
 #' col_mult("red", "yellow")

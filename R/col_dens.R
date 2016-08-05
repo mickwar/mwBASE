@@ -1,5 +1,6 @@
 #' col_dens
 #'
+#' @description
 #' Original by Arthur Lui, adapted by Mickey.
 #' Colors a specified area under a density within an interval by making
 #' a call to the polygon function
@@ -8,6 +9,7 @@
 #' @param xlim      numeric vector of length 2 specifying the interval
 #' @param fill      color, the color that will fill in the area under the curve, defaults to black
 #' @param border    color, the outline of the area receives this color, defaults to fill
+#' @seealso col_mult, col_gray
 #' @export
 #' @examples
 #' x = rnorm(100)

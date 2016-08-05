@@ -16,9 +16,7 @@ col_dens(dens, xlim, fill = "black", border = NULL)
 \item{border}{color, the outline of the area receives this color, defaults to fill}
 }
 \description{
-Original by Arthur Lui, adapted by Mickey
-}
-\details{
+Original by Arthur Lui, adapted by Mickey.
 Colors a specified area under a density within an interval by making
 a call to the polygon function
 }
@@ -27,5 +25,8 @@ x = rnorm(100)
 dens = density(x)
 plot(dens)
 col_dens(dens, c(0, 1), fill = "blue", border = NA)
+}
+\seealso{
+col_mult, col_gray
 }
 
