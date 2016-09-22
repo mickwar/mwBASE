@@ -6,6 +6,10 @@
 #' @param data          An R object that is passed to target()
 #' @param target        The log density function of the target distribution, which takes two
 #'                      arguments: the data and the parameters, i.e. target(data, params)
+#' @param nparam        Numeric, the number of parameters (the length of params in 
+#'                      target(data, params)). If missing, obtaining the number of parameters
+#'                      is attempted by looking at groups, bounds, or chain_init if they
+#'                      provided.
 #' @param nmcmc         Numeric, the number of iterations the sampler should be run _post_
 #'                      burn-in (this is not the total number of iterations)
 #' @param nburn         Numeric, the number of iterations the sampler should be as a burn-in
@@ -18,9 +22,11 @@
 #' @param bounds        List containing two named vectors: "lower" and "upper". Each is a
 #'                      numeric vector the same length as the number of parameters being
 #'                      updated. "lower" ides the lower bound and "upper" the upper bound.
-#'                      Defaults to list("lower" = rep(-Inf, p), upper = rep(+Inf, p)).
+#'                      Defaults to list("lower" = rep(-Inf, nparam),
+#'                      upper = rep(+Inf, nparam)).
 #' @param chain_init    Numeric, same length as the number of parameters, gives the starting
-#'                      point of the chain.
+#'                      point of the chain. Defaults to runif(nparam), since in many cases,
+#'                      possible values for the parameters are in (0, 1].
 #' @param acc_rate      Numeric within (0, 1), the desired acceptance rate. Passed to
 #'                      autotune(). Defaults to 0.234.
 #' @param k             Numeric greater than 1. The scale parameter passed to autotune().
@@ -39,7 +45,9 @@
 #'
 #' The sampler is run a total of nburn + nmcmc times with the first nburn samples being
 #' discarded. The remaining samples are then `thinned' so that every nthin sample is
-#' ultimately returned to the user.
+#' ultimately returned to the user. It is necessary that nmcmc > 0, since because of
+#' the `autotuning' process (described later), every draw during the burn-in cannot be
+#' assumed to have come from the target distribution.
 #'
 #' To understand the group parameter, suppose we have a target distribution with four
 #' parameters. Suppose we wish to update the second and third together, but the first
@@ -53,7 +61,7 @@
 #'
 #' Proposal distributions are assumed to be the multivariate normal. To avoid the
 #' potentially tedious process of tuning the sampler, the covariance matrices for the
-#' proposal distributions are tuned automatically. During the burn-in phase, every
+#' proposal distributions are tuned automatically. During the burn-in phase only, every
 #' window iterations, the acceptance rate is calculated from the most recent samples
 #' and the covariances of the proposal distributions are adjusted accordingly. In general,
 #' if the acceptance rate is too small this means the proposal covariances are too large,
@@ -62,28 +70,94 @@
 #' proposal covariances will be increased.
 #' @export
 
-mcmc_sampler = function(data, target, nmcmc = 1000, nburn = 1000, nthin = 1,
-    window = 100, groups, bounds, chain_init, display = 1000){
+mcmc_sampler = function(data, target, nparam, nmcmc = 1000, nburn = 1000, nthin = 1,
+    window = 100, groups, bounds, chain_init, acc_rate = 0.234, k, display = 1000){
+
     require(MASS)
+
+    # Try to get what nparam should be
+    if (missing(nparam)){
+        if (!missing(chain_init))
+            nparam = length(chain_init)
+        if (!missing(groups))
+            nparam = max(unlist(groups))
+        if (!missing(bounds))
+            nparam = length(bound$lower)
+        }
+    if (missing(nparam))
+        stop("nparam not specified")
+
+    if (missing(groups))
+        groups = list(1:nparam)
+    if (groups == 0)
+        groups = lapply(1:nparam, identity)
+
+    if (length(unlist(groups)) != nparam)
+        stop("total number of indices in groups must be equal to the number of parameters")
+    if (length(unlist(groups)) != length(unique(unlist(groups))))
+        stop("indices in groups should be exactly once")
+
+    if (missing(bounds))
+        bounds = list("lower" = rep(-Inf, nparam), "upper" = rep(Inf, nparam))
+
+    if (missing(k))
+        k = window / 50
+
+    if (missing(chain_init))
+        chain_init = runif(nparam)
+
+    params = matrix(0, nburn + nmcmc, nparam)
+    accept = matrix(0, nburn + nmcmc, length(groups))
+    params[1,] = chain_init
+
+    cand.sig = rep(list(NULL), length(groups))
+    for (i in 1:length(groups))
+        cand.sig[[i]] = 0.1*diag(length(groups[[i]]))
+
+    tval = target(data, params[1,])
+    if (is.infinite(tval))
+        stop("the first evaluaion of target(data, chain_init) cannot be infinite.")
 
     for (i in 2:(nburn + nmcmc)){
         if (floor(i/display) == i/display && display > 0)
             cat("\r   ", i, "/", nburn+nmcmc)
         params[i,] = params[i-1,]
-        cand = mvrnorm(1, params[i-1,], cand.sig)
-        if (all(cand > lower) && all(cand < upper)){
-            cand.post = target(data, cand)
-            if (log(runif(1)) <= cand.post - post){
-                post = cand.post
-                params[i,] = cand
-                accept[i] = 1
+        for (j in 1:length(groups)){
+            cand = params[i,]
+            cand[groups[[j]]] = mvrnorm(1, params[i-1, groups[[j]]], cand.sig[[j]])
+            if (all(cand > bounds$lower[groups[[j]]]) && 
+                all(cand < bounds$upper[groups[[j]]])){
+                cand.tval = target(data, cand)
+                if (log(runif(1)) <= cand.tval - tval){
+                    tval = cand.tval
+                    params[i, groups[[j]]] = cand
+                    accept[i, j] = 1
+                    }
                 }
+            if ((floor(i/window) == i/window) && (i <= nburn))
+                cand.sig[[j]] = autotune(mean(accept[(i-window+1):i, j]), target = acc_rate, k = k) *
+                    (cand.sig[[j]] + window * var(params[(i-window+1):i, groups[[j]]]) / i)
             }
-        if ((floor(i/window) == i/window) && (i <= nburn))
-            cand.sig = autotune(mean(accept[(i-window+1):i]), target = 0.234, k = window/50) *
-                (cand.sig + window * var(params[(i-window+1):i,]) / i)
         if (i == (nburn + nmcmc) && display > 0)
             cat("\n")
         }
 
+    # Discard the burn-in
+    params = tail(params, nmcmc)
+    accept = tail(params, nmcmc)
+
+    # Do the thinning
+    params = params[seq(1, nmcmc, by = nthin),]
+    accept = accept[seq(1, nmcmc, by = nthin),]
+
+    return (list(
+        "params" = params,
+        "accept" = accept,
+        "cand.sig" = cand.sig,
+        "nparam" = nparam,
+        "nmcmc" = nmcmc,
+        "nthin" = nthin,
+        "groups" = groups,
+        "bounds" = bounds
+        ))
     }
