@@ -7,9 +7,9 @@
 #' the acceptance rate (0 <= A <= 1) for each parameter using the
 #' last 500 draws. Multiply each candidate sigma by autotune().
 #' 
-#' @param accept - the acceptance rate within a given window
-#' @param target - the acceptance rate goal
-#' @param k - the maximum the candidate sigma can change by, 1/k is 
+#' @param accept    the acceptance rate within a given window
+#' @param target    the acceptance rate goal
+#' @param k         the maximum the candidate sigma can change by, 1/k is 
 #'     minimum it can change by. For instance, if the current
 #'     sigma is 2, and in some window of mcmc iterations every
 #'     draw was accepted, the new candidate sigma would now

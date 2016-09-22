@@ -7,11 +7,11 @@
 autotune(accept, target = 0.25, k = 2.5)
 }
 \arguments{
-\item{accept}{- the acceptance rate within a given window}
+\item{accept}{the acceptance rate within a given window}
 
-\item{target}{- the acceptance rate goal}
+\item{target}{the acceptance rate goal}
 
-\item{k}{- the maximum the candidate sigma can change by, 1/k is 
+\item{k}{the maximum the candidate sigma can change by, 1/k is 
 minimum it can change by. For instance, if the current
 sigma is 2, and in some window of mcmc iterations every
 draw was accepted, the new candidate sigma would now
