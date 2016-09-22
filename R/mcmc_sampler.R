@@ -144,7 +144,7 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 1000, nburn = 1000, nthin 
 
     # Discard the burn-in
     params = tail(params, nmcmc)
-    accept = tail(params, nmcmc)
+    accept = tail(accept, nmcmc)
 
     # Do the thinning
     params = params[seq(1, nmcmc, by = nthin),]
