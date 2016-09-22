@@ -129,7 +129,7 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 1000, nburn = 1000, nthin 
                 cand.tval = target(data, cand)
                 if (log(runif(1)) <= cand.tval - tval){
                     tval = cand.tval
-                    params[i, groups[[j]]] = cand
+                    params[i, groups[[j]]] = cand[groups[[j]]]
                     accept[i, j] = 1
                     }
                 }
