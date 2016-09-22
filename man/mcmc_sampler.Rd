@@ -4,14 +4,20 @@
 \alias{mcmc_sampler}
 \title{MCMC sampler}
 \usage{
-mcmc_sampler(data, target, nmcmc = 1000, nburn = 1000, nthin = 1,
-  window = 100, groups, bounds, chain_init, display = 1000)
+mcmc_sampler(data, target, nparam, nmcmc = 1000, nburn = 1000, nthin = 1,
+  window = 100, groups, bounds, chain_init, acc_rate = 0.234, k,
+  display = 1000)
 }
 \arguments{
 \item{data}{An R object that is passed to target()}
 
 \item{target}{The log density function of the target distribution, which takes two
 arguments: the data and the parameters, i.e. target(data, params)}
+
+\item{nparam}{Numeric, the number of parameters (the length of params in 
+target(data, params)). If missing, obtaining the number of parameters
+is attempted by looking at groups, bounds, or chain_init if they
+provided.}
 
 \item{nmcmc}{Numeric, the number of iterations the sampler should be run _post_
 burn-in (this is not the total number of iterations)}
@@ -30,19 +36,21 @@ parameters that should be updated jointly. See details.}
 \item{bounds}{List containing two named vectors: "lower" and "upper". Each is a
 numeric vector the same length as the number of parameters being
 updated. "lower" ides the lower bound and "upper" the upper bound.
-Defaults to list("lower" = rep(-Inf, p), upper = rep(+Inf, p)).}
+Defaults to list("lower" = rep(-Inf, nparam),
+upper = rep(+Inf, nparam)).}
 
 \item{chain_init}{Numeric, same length as the number of parameters, gives the starting
-point of the chain.}
-
-\item{display}{Numeric, the iteration count is displayed every display samples.
-Setting display to 0 means the count is not displayed.}
+point of the chain. Defaults to runif(nparam), since in many cases,
+possible values for the parameters are in (0, 1].}
 
 \item{acc_rate}{Numeric within (0, 1), the desired acceptance rate. Passed to
 autotune(). Defaults to 0.234.}
 
 \item{k}{Numeric greater than 1. The scale parameter passed to autotune().
 Defaults to window / 50.}
+
+\item{display}{Numeric, the iteration count is displayed every display samples.
+Setting display to 0 means the count is not displayed.}
 }
 \description{
 Sample from a target distribution using Metropolis updates
@@ -59,7 +67,9 @@ infinite values are returned.
 
 The sampler is run a total of nburn + nmcmc times with the first nburn samples being
 discarded. The remaining samples are then `thinned' so that every nthin sample is
-ultimately returned to the user.
+ultimately returned to the user. It is necessary that nmcmc > 0, since because of
+the `autotuning' process (described later), every draw during the burn-in cannot be
+assumed to have come from the target distribution.
 
 To understand the group parameter, suppose we have a target distribution with four
 parameters. Suppose we wish to update the second and third together, but the first
@@ -73,7 +83,7 @@ each parameter separately, set groups = 0.
 
 Proposal distributions are assumed to be the multivariate normal. To avoid the
 potentially tedious process of tuning the sampler, the covariance matrices for the
-proposal distributions are tuned automatically. During the burn-in phase, every
+proposal distributions are tuned automatically. During the burn-in phase only, every
 window iterations, the acceptance rate is calculated from the most recent samples
 and the covariances of the proposal distributions are adjusted accordingly. In general,
 if the acceptance rate is too small this means the proposal covariances are too large,
