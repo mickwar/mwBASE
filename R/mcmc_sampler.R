@@ -89,7 +89,7 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 1000, nburn = 1000, nthin 
 
     if (missing(groups))
         groups = list(1:nparam)
-    if (groups == 0)
+    if (!is.list(groups) && groups == 0)
         groups = lapply(1:nparam, identity)
 
     if (length(unlist(groups)) != nparam)
