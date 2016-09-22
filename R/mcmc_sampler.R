@@ -60,6 +60,7 @@
 #' so they will be decreased. The decrease is determined by the function autotune()
 #' the covariance of the samples. Similarly, if the acceptance rate is too high, the
 #' proposal covariances will be increased.
+#' @export
 
 mcmc_sampler = function(data, target, nmcmc = 1000, nburn = 1000, nthin = 1,
     window = 100, groups, bounds, chain_init, display = 1000){
