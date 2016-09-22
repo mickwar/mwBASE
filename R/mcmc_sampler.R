@@ -125,8 +125,7 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 1000, nburn = 1000, nthin 
         for (j in 1:length(groups)){
             cand = params[i,]
             cand[groups[[j]]] = mvrnorm(1, params[i-1, groups[[j]]], cand.sig[[j]])
-            if (all(cand > bounds$lower[groups[[j]]]) && 
-                all(cand < bounds$upper[groups[[j]]])){
+            if (all(cand > bounds$lower) && all(cand < bounds$upper)){
                 cand.tval = target(data, cand)
                 if (log(runif(1)) <= cand.tval - tval){
                     tval = cand.tval
