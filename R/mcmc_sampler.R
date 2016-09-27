@@ -72,8 +72,8 @@
 #' @example examples/ex_mcmc.R
 #' 
 
-mcmc_sampler = function(data, target, nparam, nmcmc = 1000, nburn = 1000, nthin = 1,
-    window = 100, groups, bounds, chain_init, acc_rate = 0.234, k, display = 1000){
+mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthin = 1,
+    window = 200, groups, bounds, chain_init, acc_rate = 0.234, k, display = 1000){
 
     require(MASS)
 
