@@ -92,7 +92,7 @@ the covariance of the samples. Similarly, if the acceptance rate is too high, th
 proposal covariances will be increased.
 }
 \examples{
-../examples/mcmc_example.R
+examples/mcmc_example.R
 
 }
 
