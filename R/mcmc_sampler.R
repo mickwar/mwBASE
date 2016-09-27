@@ -69,7 +69,7 @@
 #' the covariance of the samples. Similarly, if the acceptance rate is too high, the
 #' proposal covariances will be increased.
 #' @export
-#' @example examples/mcmc_example.R
+#' @example examples/ex_mcmc.R
 #' 
 
 mcmc_sampler = function(data, target, nparam, nmcmc = 1000, nburn = 1000, nthin = 1,

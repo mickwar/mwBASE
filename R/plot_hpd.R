@@ -17,19 +17,7 @@
 #' @param ...      extra arguments to pass to plot()
 #' @seealso hpd_uni, hpd_mult, col_dens, col_mult, col_fade
 #' @export
-#' @examples
-#' x = rnorm(100)
-#' y = rnorm(100, 1)
-#' hpd.x = hpd_uni(x)
-#' hpd.y = hpd_uni(y)
-#'
-#' # x and y on their own plots
-#' plot_hpd(density(x), hpd.x, col1 = "dodgerblue")
-#' plot_hpd(density(y), hpd.y, col1 = "firebrick1")
-#'
-#' # together on one plot
-#' plot_hpd(density(x), hpd.x, col1 = "dodgerblue", fade = 0.6)
-#' plot_hpd(density(y), hpd.y, col1 = "firebrick1", fade = 0.6, add = TRUE)
+#' @example examples/ex_plot_hpd.R
 
 plot_hpd = function(dens, hpd, col1, col2 = "gray50",
     multiply = TRUE, fade = 1, add = FALSE, ...){
