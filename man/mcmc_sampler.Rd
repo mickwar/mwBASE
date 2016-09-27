@@ -4,9 +4,9 @@
 \alias{mcmc_sampler}
 \title{MCMC sampler}
 \usage{
-mcmc_sampler(data, target, nparam, nmcmc = 1000, nburn = 1000, nthin = 1,
-  window = 100, groups, bounds, chain_init, acc_rate = 0.234, k,
-  display = 1000)
+mcmc_sampler(data, target, nparam, nmcmc = 10000, nburn = 10000,
+  nthin = 1, window = 200, groups, bounds, chain_init, acc_rate = 0.234,
+  k, display = 1000)
 }
 \arguments{
 \item{data}{An R object that is passed to target()}
