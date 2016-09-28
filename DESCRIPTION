@@ -1,4 +1,4 @@
-Package: mwbase
+Package: mwBASE
 Title: Collection of functions frequently used by myself
 Version: 0.0.0.9000
 Authors@R: person("Mickey", "Warner", email = "mawarner@ucsc.edu", role = c("aut", "cre"))
