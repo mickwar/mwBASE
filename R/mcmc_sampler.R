@@ -77,7 +77,7 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
 
     require(MASS)
     if (display > 0 && display < 100)
-        message("Note: setting display too low (but non-zero) may increase sampling time.")
+        message("Note: setting 'display' too low (but non-zero) may increase sampling time.")
 
     trailing = function(x, digits = 4)
         formatC(x, digits=digits, format="f")
@@ -120,9 +120,9 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
         groups = lapply(1:nparam, identity)
 
     if (length(unlist(groups)) != nparam)
-        stop("total number of indices in groups must be equal to the number of parameters")
+        stop("Total number of indices in groups must be equal to the number of parameters")
     if (length(unlist(groups)) != length(unique(unlist(groups))))
-        stop("indices in groups should be exactly once")
+        stop("Indices in groups should be exactly once")
 
     if (missing(bounds))
         bounds = list("lower" = rep(-Inf, nparam), "upper" = rep(Inf, nparam))
@@ -142,8 +142,11 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
         cand.sig[[i]] = 0.1*diag(length(groups[[i]]))
 
     tval = target(data, params[1,])
-    if (is.infinite(tval))
-        stop("the first evaluaion of target(data, chain_init) cannot be infinite.")
+    if (is.infinite(tval)){
+        stop("The evaluaion of target(data, chain_init) cannot be infinite.\n",
+            "    Try running the function again to get a new randomized chain_init, or\n",
+            "    manually specify chain_init.")
+        }
 
     begin_time = as.numeric(Sys.time())
     for (i in 2:(nburn + nmcmc)){
