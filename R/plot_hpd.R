@@ -3,24 +3,30 @@
 #' @description
 #' Plot a univariate density with its hpd shaded
 #'
-#' @param dens     density object to be plotted
-#' @param hpd      vector containing end points of the hpd region, must have
-#'                 an even length
-#' @param col1     the color of the non-shaded portion of the plot
-#' @param col2     the color of the shaded portion, defaults to gray50
-#' @param multiply logical, if true multiply col1 with col2 and set new
+#' @param x        Vector of samples to be plotted
+#' @param dens     Density object of x (optional)
+#' @param hpd      Vector containing end points of the hpd region, must have
+#'                 an even length (optional)
+#' @param col1     Color of the non-shaded portion of the plot
+#' @param col2     Color of the shaded portion
+#' @param multiply Logical, if true multiply col1 with col2 and set new
 #'                 color to col2, otherwise don't
-#' @param fade     numeric in [0, 1], the degree of transparency to
+#' @param fade     Numeric in [0, 1], the degree of transparency to
 #'                 affect col1 and col2, ranging from 0 (totally
 #'                 transparent) to 1 (opaque), defaults to 1
-#' @param add      logical, should the plot be added to the current one
-#' @param ...      extra arguments to pass to plot()
+#' @param add      Logical, should the plot be added to the current one
+#' @param ...      Extra arguments to pass to plot()
 #' @seealso hpd_uni, hpd_mult, col_dens, col_mult, col_fade
 #' @export
 #' @example examples/ex_plot_hpd.R
 
-plot_hpd = function(dens, hpd, col1, col2 = "gray50",
+plot_hpd = function(x, dens, hpd, col1 = "gray50", col2 = "gray50",
     multiply = TRUE, fade = 1, add = FALSE, ...){
+
+    if (missing(dens))
+        dens = density(x)
+    if (missing(hpd))
+        hpd = hpd_mult(x)
 
     if (multiply)
         col2 = col_mult(col1, col2)

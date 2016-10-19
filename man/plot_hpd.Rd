@@ -4,29 +4,31 @@
 \alias{plot_hpd}
 \title{plot_hpd}
 \usage{
-plot_hpd(dens, hpd, col1, col2 = "gray50", multiply = TRUE, fade = 1,
-  add = FALSE, ...)
+plot_hpd(x, dens, hpd, col1 = "gray50", col2 = "gray50", multiply = TRUE,
+  fade = 1, add = FALSE, ...)
 }
 \arguments{
-\item{dens}{density object to be plotted}
+\item{x}{Vector of samples to be plotted}
 
-\item{hpd}{vector containing end points of the hpd region, must have
-an even length}
+\item{dens}{Density object of x (optional)}
 
-\item{col1}{the color of the non-shaded portion of the plot}
+\item{hpd}{Vector containing end points of the hpd region, must have
+an even length (optional)}
 
-\item{col2}{the color of the shaded portion, defaults to gray50}
+\item{col1}{Color of the non-shaded portion of the plot}
 
-\item{multiply}{logical, if true multiply col1 with col2 and set new
+\item{col2}{Color of the shaded portion}
+
+\item{multiply}{Logical, if true multiply col1 with col2 and set new
 color to col2, otherwise don't}
 
-\item{fade}{numeric in [0, 1], the degree of transparency to
+\item{fade}{Numeric in [0, 1], the degree of transparency to
 affect col1 and col2, ranging from 0 (totally
 transparent) to 1 (opaque), defaults to 1}
 
-\item{add}{logical, should the plot be added to the current one}
+\item{add}{Logical, should the plot be added to the current one}
 
-\item{...}{extra arguments to pass to plot()}
+\item{...}{Extra arguments to pass to plot()}
 }
 \description{
 Plot a univariate density with its hpd shaded
@@ -38,12 +40,12 @@ hpd.x = hpd_uni(x)
 hpd.y = hpd_uni(y)
 
 # x and y on their own plots
-plot_hpd(density(x), hpd.x, col1 = "dodgerblue")
-plot_hpd(density(y), hpd.y, col1 = "firebrick1")
+plot_hpd(x, col1 = "dodgerblue")
+plot_hpd(y, col1 = "firebrick1")
 
 # together on one plot
-plot_hpd(density(x), hpd.x, col1 = "dodgerblue", fade = 0.6)
-plot_hpd(density(y), hpd.y, col1 = "firebrick1", fade = 0.6, add = TRUE)
+plot_hpd(x, col1 = "dodgerblue", fade = 0.6)
+plot_hpd(y, col1 = "firebrick1", fade = 0.6, add = TRUE)
 }
 \seealso{
 hpd_uni, hpd_mult, col_dens, col_mult, col_fade
