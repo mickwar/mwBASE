@@ -76,6 +76,31 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
     window = 200, groups, bounds, chain_init, acc_rate = 0.234, k, display = 1000){
 
     require(MASS)
+    if (display > 0 && display < 100)
+        message("Note: setting display too low (but non-zero) may increase sampling time.")
+
+    trailing = function(x, digits = 4)
+        formatC(x, digits=digits, format="f")
+    nice_time = function(seconds){
+        # floor() or round() would work as well
+        seconds = ceiling(seconds)
+        days = seconds %/% (60*60*24)
+        seconds = seconds %% (60*60*24)
+        hours = seconds %/% (60*60)
+        seconds = seconds %% (60*60)
+        minutes = seconds %/% (60)
+        seconds = seconds %% (60)
+        out = ""
+        if (days > 0)
+            out = paste0(out, days, "d ", hours, "h ", minutes, "m ", seconds, "s")
+        if (days == 0 && hours > 0)
+            out = paste0(out, hours, "h ", minutes, "m ", seconds, "s")
+        if (days == 0 && hours == 0 && minutes > 0)
+            out = paste0(out, minutes, "m ", seconds, "s")
+        if (days == 0 && hours == 0 && minutes == 0)
+            out = paste0(out, seconds, "s")
+        return (out)
+        }
 
     # Try to get what nparam should be
     if (missing(nparam)){
@@ -120,9 +145,14 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
     if (is.infinite(tval))
         stop("the first evaluaion of target(data, chain_init) cannot be infinite.")
 
+    begin_time = as.numeric(Sys.time())
     for (i in 2:(nburn + nmcmc)){
-        if (floor(i/display) == i/display && display > 0)
-            cat("\r   ", i, "/", nburn+nmcmc)
+        if (floor(i/display) == i/display && display > 0){
+            curr_time = as.numeric(Sys.time()) - begin_time
+            cat("\r   ", i, " / ", nburn+nmcmc, " -- ",
+                trailing(100*i/(nburn+nmcmc), 2),"% -- Remaining: ",
+                nice_time(curr_time*(nmcmc+nburn-i)/(i-1)), "            ", sep = "")
+            }
         params[i,] = params[i-1,]
         for (j in 1:length(groups)){
             cand = params[i,]
@@ -139,8 +169,12 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
                 cand.sig[[j]] = autotune(mean(accept[(i-window+1):i, j]), target = acc_rate, k = k) *
                     (cand.sig[[j]] + window * var(params[(i-window+1):i, groups[[j]]]) / i)
             }
-        if (i == (nburn + nmcmc) && display > 0)
-            cat("\n")
+        if (i == (nburn + nmcmc) && display > 0){
+            curr_time = as.numeric(Sys.time()) - begin_time
+            cat("\r   ", i, " / ", nburn+nmcmc, " -- ",
+                trailing(100, 2),"% -- Elapsed: ",
+                nice_time(curr_time), "            \n", sep = "")
+            }
         }
 
     # Discard the burn-in
