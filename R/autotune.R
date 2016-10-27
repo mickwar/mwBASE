@@ -24,4 +24,3 @@
 autotune = function(accept, target = 0.25, k = 2.5)
     (1+(cosh(accept-target)-1)*(k-1)/(cosh(target-
         ceiling(accept-target))-1))^sign(accept-target)
-
