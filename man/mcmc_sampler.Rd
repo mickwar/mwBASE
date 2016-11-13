@@ -5,8 +5,8 @@
 \title{MCMC sampler}
 \usage{
 mcmc_sampler(data, target, nparam, nmcmc = 10000, nburn = 10000,
-  nthin = 1, window = 200, groups, bounds, chain_init, acc_rate = 0.234,
-  k, display = 1000)
+  nthin = 1, window = 200, groups, bounds, chain_init, cand_sig,
+  acc_rate = 0.234, k, display = 1000)
 }
 \arguments{
 \item{data}{An R object that is passed to target()}
@@ -42,6 +42,8 @@ upper = rep(+Inf, nparam)).}
 \item{chain_init}{Numeric, same length as the number of parameters, gives the starting
 point of the chain. Defaults to runif(nparam), since in many cases,
 possible values for the parameters are in (0, 1].}
+
+\item{cand_sig}{List of diagonal matrices. See details.}
 
 \item{acc_rate}{Numeric within (0, 1), the desired acceptance rate. Passed to
 autotune(). Defaults to 0.234.}
@@ -90,6 +92,8 @@ if the acceptance rate is too small this means the proposal covariances are too 
 so they will be decreased. The decrease is determined by the function autotune()
 the covariance of the samples. Similarly, if the acceptance rate is too high, the
 proposal covariances will be increased.
+
+TODO: Write about cand_sig.
 }
 \examples{
 x = runif(100)

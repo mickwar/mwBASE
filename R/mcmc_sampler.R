@@ -27,6 +27,7 @@
 #' @param chain_init    Numeric, same length as the number of parameters, gives the starting
 #'                      point of the chain. Defaults to runif(nparam), since in many cases,
 #'                      possible values for the parameters are in (0, 1].
+#' @param cand_sig      List of diagonal matrices. See details.
 #' @param acc_rate      Numeric within (0, 1), the desired acceptance rate. Passed to
 #'                      autotune(). Defaults to 0.234.
 #' @param k             Numeric greater than 1. The scale parameter passed to autotune().
@@ -68,12 +69,14 @@
 #' so they will be decreased. The decrease is determined by the function autotune()
 #' the covariance of the samples. Similarly, if the acceptance rate is too high, the
 #' proposal covariances will be increased.
+#'
+#' TODO: Write about cand_sig.
 #' @export
 #' @example examples/ex_mcmc.R
 #' 
 
 mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthin = 1,
-    window = 200, groups, bounds, chain_init, acc_rate = 0.234, k, display = 1000){
+    window = 200, groups, bounds, chain_init, cand_sig, acc_rate = 0.234, k, display = 1000){
 
     require(MASS)
     if (display > 0 && display < 100)
@@ -133,13 +136,15 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
     if (missing(chain_init))
         chain_init = runif(nparam)
 
+    if (missing(cand_sig)){
+        cand_sig = rep(list(NULL), length(groups))
+        for (i in 1:length(groups))
+            cand_sig[[i]] = 0.1*diag(length(groups[[i]]))
+        }
+
     params = matrix(0, nburn + nmcmc, nparam)
     accept = matrix(0, nburn + nmcmc, length(groups))
     params[1,] = chain_init
-
-    cand.sig = rep(list(NULL), length(groups))
-    for (i in 1:length(groups))
-        cand.sig[[i]] = 0.1*diag(length(groups[[i]]))
 
     tval = target(data, params[1,])
     if (is.infinite(tval)){
@@ -159,7 +164,7 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
         params[i,] = params[i-1,]
         for (j in 1:length(groups)){
             cand = params[i,]
-            cand[groups[[j]]] = mvrnorm(1, params[i-1, groups[[j]]], cand.sig[[j]])
+            cand[groups[[j]]] = mvrnorm(1, params[i-1, groups[[j]]], cand_sig[[j]])
             if (all(cand > bounds$lower) && all(cand < bounds$upper)){
                 cand.tval = target(data, cand)
                 if (log(runif(1)) <= cand.tval - tval){
