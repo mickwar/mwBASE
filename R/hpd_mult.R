@@ -9,6 +9,8 @@
 #' @param prob      numeric in (0, 1) the probability that the interval should be
 #' @param tol       numeric, smaller means longer compute time, but more accurate
 #'                  results
+#' @param force_uni Logical, should the function be forced to return a single interval?
+#'                  Defaults to FALSE.
 #' @param interactive logical, defaults to FALSE. If TRUE, a fun plot is shown
 #'                  and the function's process of choosing the region is displayed.
 #'                  The user hits enter to proceed through.
@@ -23,6 +25,9 @@
 #' whose area is computed. Given this area, a new horizontal line is generated
 #' until the area is close to prob (within tol).
 #'
+#' The option force_uni == TRUE is meant to be a replacement for hpd_uni(), since that
+#' function can take a long time to run.
+#'
 #' @seealso hpd_uni
 #' @export
 #' @examples
@@ -30,7 +35,7 @@
 #' x = c(rnorm(100), rnorm(100, 5)
 #' hpd = hpd_mult(x)
 
-hpd_mult = function(x, dens, prob = 0.95, tol, interactive = FALSE){
+hpd_mult = function(x, dens, prob = 0.95, tol, force_uni = FALSE, interactive = FALSE){
     if (missing(dens))
         dens = density(x)
     max.k = max(dens$y)
@@ -41,8 +46,9 @@ hpd_mult = function(x, dens, prob = 0.95, tol, interactive = FALSE){
         tol = max.k / 10000
     count = 0
     if (interactive){
-        plot(dens)
-        polygon(dens$x, dens$y, col='gray80')
+#       plot(dens)
+#       polygon(dens$x, dens$y, col='gray80')
+        plot_hpd(x, hpd = c(-Inf, Inf))
         }
     zeros = function(y, k, return.max.min = FALSE){
         # y is expected to be density(x)$y
@@ -78,6 +84,10 @@ hpd_mult = function(x, dens, prob = 0.95, tol, interactive = FALSE){
             int = c(int, 1)
             out = c(out, length(y))
             }
+        if (force_uni){
+            out = c(out[1], out[length(out)])
+            int = c(-1, 1)
+            }
         if (return.max.min)
             return (out)
         return (out[as.logical(int)])
@@ -94,6 +104,7 @@ hpd_mult = function(x, dens, prob = 0.95, tol, interactive = FALSE){
             c.prob = c.prob + mean(x >= dens$x[
                  int[2*j-1]] & x <= dens$x[int[2*j]])
         if (interactive){
+            plot_hpd(x, hpd = dens$x[int])
             abline(h=k)
             abline(h=c(max.k, min.k), col='blue')
             cat("Probability:",c.prob)

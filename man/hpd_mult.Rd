@@ -4,7 +4,8 @@
 \alias{hpd_mult}
 \title{hpd_mult}
 \usage{
-hpd_mult(x, dens, prob = 0.95, tol, interactive = FALSE)
+hpd_mult(x, dens, prob = 0.95, tol, force_uni = FALSE,
+  interactive = FALSE)
 }
 \arguments{
 \item{x}{vector of samples from some distribution}
@@ -15,6 +16,9 @@ hpd_mult(x, dens, prob = 0.95, tol, interactive = FALSE)
 
 \item{tol}{numeric, smaller means longer compute time, but more accurate
 results}
+
+\item{force_uni}{Logical, should the function be forced to return a single interval?
+Defaults to FALSE.}
 
 \item{interactive}{logical, defaults to FALSE. If TRUE, a fun plot is shown
 and the function's process of choosing the region is displayed.
@@ -33,6 +37,9 @@ A random horizontal line is repeatedly generated and the points along the line
 that cross dens$y are calculated. These points make up a proposed hpd region
 whose area is computed. Given this area, a new horizontal line is generated
 until the area is close to prob (within tol).
+
+The option force_uni == TRUE is meant to be a replacement for hpd_uni(), since that
+function can take a long time to run.
 }
 \examples{
 set.seed(1)
