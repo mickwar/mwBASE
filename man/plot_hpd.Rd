@@ -50,4 +50,3 @@ plot_hpd(y, col1 = "firebrick1", fade = 0.6, add = TRUE)
 \seealso{
 hpd_uni, hpd_mult, col_dens, col_mult, col_fade
 }
-

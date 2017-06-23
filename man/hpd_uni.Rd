@@ -28,4 +28,3 @@ hpd.x
 \seealso{
 hpd_mult
 }
-

@@ -30,4 +30,3 @@ col_dens(dens, c(0, 1), fill = "blue", border = NA)
 \seealso{
 col_mult, col_gray, col_fade
 }
-

@@ -20,4 +20,3 @@ col_gray(c(0.8, 0.1, 0.8), "yprime")
 \seealso{
 col_dens, col_mult, col_fade
 }
-

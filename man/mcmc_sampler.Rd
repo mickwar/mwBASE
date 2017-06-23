@@ -151,4 +151,3 @@ plot_hpd(density(out$params[,1]), hpds[,1], "dodgerblue")
 plot_hpd(density(out$params[,2]), hpds[,2], "dodgerblue")
 plot_hpd(density(out$params[,3]), hpds[,3], "dodgerblue")
 }
-

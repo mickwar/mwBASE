@@ -49,4 +49,3 @@ make_phantom(text = c("Red", "Blue"), display = 2, colors = c("red", "blue"), se
 par(mfrow = c(1, 1))
 # Notice the position of the text in the two titles compared with that of Figure 1
 }
-

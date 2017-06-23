@@ -49,4 +49,3 @@ hpd = hpd_mult(x)
 \seealso{
 hpd_uni
 }
-

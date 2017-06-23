@@ -29,4 +29,3 @@ window of mcmc iterations. For example, every 500 draws compute
 the acceptance rate (0 <= A <= 1) for each parameter using the
 last 500 draws. Multiply each candidate sigma by autotune().
 }
-

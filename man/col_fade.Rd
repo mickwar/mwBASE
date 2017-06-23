@@ -23,4 +23,3 @@ col_fade(c(0.564, 0.933, 0.564), 0.5)
 \seealso{
 col_dens, col_mult, col_gray
 }
-

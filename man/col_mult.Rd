@@ -29,4 +29,3 @@ col_mult("dodgerblue", "gray50")
 \seealso{
 col_dens, col_gray, col_fade
 }
-
