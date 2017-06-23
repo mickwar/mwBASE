@@ -138,8 +138,15 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
 
     if (missing(cand_sig)){
         cand_sig = rep(list(NULL), length(groups))
-        for (i in 1:length(groups))
+        cand_chol = rep(list(NULL), length(groups))
+        for (i in 1:length(groups)){
             cand_sig[[i]] = 0.1*diag(length(groups[[i]]))
+            cand_chol[[i]] = chol(cand_sig[[i]])
+            }
+    } else {
+        cand_chol = rep(list(NULL), length(groups))
+        for (i in 1:length(groups))
+            cand_chol[[i]] = chol(cand_sig[[i]])
         }
 
     params = matrix(0, nburn + nmcmc, nparam)
@@ -164,7 +171,9 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
         params[i,] = params[i-1,]
         for (j in 1:length(groups)){
             cand = params[i,]
-            cand[groups[[j]]] = mvrnorm(1, params[i-1, groups[[j]]], cand_sig[[j]])
+#           cand[groups[[j]]] = mvrnorm(1, params[i-1, groups[[j]]], cand_sig[[j]])
+            cand[groups[[j]]] = params[i-1, groups[[j]]] +
+                rnorm(length(groups[[j]])) %*% cand_chol[[j]]
             if (all(cand > bounds$lower) && all(cand < bounds$upper)){
                 cand.tval = target(data, cand)
                 if (log(runif(1)) <= cand.tval - tval){
@@ -176,6 +185,7 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
             if ((floor(i/window) == i/window) && (i <= nburn))
                 cand_sig[[j]] = autotune(mean(accept[(i-window+1):i, j]), target = acc_rate, k = k) *
                     (cand_sig[[j]] + window * var(params[(i-window+1):i, groups[[j]]]) / i)
+                cand_chol[[j]] = chol(cand_sig[[j]])
             }
         if (i == (nburn + nmcmc) && display > 0){
             curr_time = as.numeric(Sys.time()) - begin_time
