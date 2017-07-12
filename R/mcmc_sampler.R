@@ -153,11 +153,24 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
     accept = matrix(0, nburn + nmcmc, length(groups))
     params[1,] = chain_init
 
+    # Hacky solution to finding working initial states
     tval = target(data, params[1,])
-    if (is.infinite(tval)){
-        stop("The evaluaion of target(data, chain_init) cannot be infinite.\n",
-            "    Try running the function again to get a new randomized chain_init, or\n",
-            "    manually specify chain_init.")
+    flag = 100
+    tries = sample((1:(flag/2)) / (flag/2))
+    while (is.infinite(tval) && flag > 0){
+        if ((flag %% 2) == 0){
+            params[1,] = rep(tries[1], nparams)
+            tries = tries[-1]
+            }
+        if ((flag %% 2) == 1){
+            params[1,] = runif(nparams)
+            }
+        tval = target(data, params[1,])
+        flag = flag - 1
+        }
+    if (is.infinite(tval) && flag == 0){
+        stop("The first evaluaion of target(data, chain_init) cannot be infinite.\n",
+            "No initial state could be found, try manually specifying chain_init.")
         }
 
     begin_time = as.numeric(Sys.time())
