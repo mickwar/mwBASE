@@ -156,7 +156,7 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
     # Hacky solution to finding working initial states
     tval = target(data, params[1,])
     if (is.infinite(tval)){
-        flag = 100
+        flag = 1000
         tries = seq(0, 1, length = floor(flag / 2))
         tries = sample(tries)
         }
