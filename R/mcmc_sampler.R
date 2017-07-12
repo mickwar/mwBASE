@@ -157,7 +157,7 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
     tval = target(data, params[1,])
     if (is.infinite(tval)){
         flag = 100
-        tries = seq(0, 1, length = floor(flag / 2)-1)
+        tries = seq(0, 1, length = floor(flag / 2))
         tries = sample(tries)
         }
     while (is.infinite(tval) && flag > 0){
