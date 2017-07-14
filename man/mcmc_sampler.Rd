@@ -6,7 +6,7 @@
 \usage{
 mcmc_sampler(data, target, nparam, nmcmc = 10000, nburn = 10000,
   nthin = 1, window = 200, groups, bounds, chain_init, cand_sig,
-  acc_rate = 0.234, k, display = 1000)
+  acc_rate = 0.234, k, display = 1000, flag = 1000)
 }
 \arguments{
 \item{data}{An R object that is passed to target()}
@@ -53,6 +53,9 @@ Defaults to window / 50.}
 
 \item{display}{Numeric, the iteration count is displayed every display samples.
 Setting display to 0 means the count is not displayed.}
+
+\item{flag}{Numeric, how many attempts should be made to find the starting
+values when not specified? Defaults to 1000.}
 }
 \description{
 Sample from a target distribution using Metropolis updates

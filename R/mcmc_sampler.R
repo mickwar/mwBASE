@@ -34,6 +34,8 @@
 #'                      Defaults to window / 50.
 #' @param display       Numeric, the iteration count is displayed every display samples.
 #'                      Setting display to 0 means the count is not displayed.
+#' @param flag          Numeric, how many attempts should be made to find the starting
+#'                      values when not specified? Defaults to 1000.
 #' @details
 #' This function is intended to be a common implementation of Markov chain Monte Carlo
 #' (MCMC) sampling with Metropolis updates. It is assumed that each parameter is
@@ -76,7 +78,8 @@
 #' 
 
 mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthin = 1,
-    window = 200, groups, bounds, chain_init, cand_sig, acc_rate = 0.234, k, display = 1000){
+    window = 200, groups, bounds, chain_init, cand_sig, acc_rate = 0.234, k, display = 1000,
+    flag = 1000){
 
     require(MASS)
     if (display > 0 && display < 100)
@@ -156,7 +159,6 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
     # Hacky solution to finding working initial states
     tval = target(data, params[1,])
     if (is.infinite(tval)){
-        flag = 1000
         tries = seq(0, 1, length = floor(flag / 2))
         tries = sample(tries)
         }
