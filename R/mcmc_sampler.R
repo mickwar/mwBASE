@@ -200,10 +200,11 @@ mcmc_sampler = function(data, target, nparam, nmcmc = 10000, nburn = 10000, nthi
                     accept[i, j] = 1
                     }
                 }
-            if ((floor(i/window) == i/window) && (i <= nburn))
+            if ((floor(i/window) == i/window) && (i <= nburn)){
                 cand_sig[[j]] = autotune(mean(accept[(i-window+1):i, j]), target = acc_rate, k = k) *
                     (cand_sig[[j]] + window * var(params[(i-window+1):i, groups[[j]]]) / i)
                 cand_chol[[j]] = chol(cand_sig[[j]])
+                }
             }
         if (i == (nburn + nmcmc) && display > 0){
             curr_time = as.numeric(Sys.time()) - begin_time
